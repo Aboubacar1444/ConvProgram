@@ -1,0 +1,164 @@
+{% extends "base.html.twig" %}
+
+{% block body %}
+    
+    <div class="container-fluid">
+        <!-- Section: Basic examples -->
+        <section>
+            <!-- Gird column -->
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header red">
+                        <h5 class="my-2 white-text font-weight-bold text-center py-3 h-100 w-100">Base de données</h5>
+                    </div>
+                    {% if banks %}  
+                        <div class="card-body rgba-white-light p-auto">
+                            <div class="table-responsive text-nowrap rgba-amber-light px-2">
+                                <table class="table table-striped " id='dt'>
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">#</th>
+                                            <th scope="col">Id</th>
+                                            <th scope="col">Type</th>
+                                            <th scope="col">IdUserSama</th>
+                                            <th scope="col">Issuer Msisdn</th>
+                                            <th scope="col">Receveir Msisdn</th>
+                                            <th scope="col">Mnoid</th>
+                                            <th scope="col">Bank name</th>
+                                            <th scope="col">Transaction Id</th>
+                                            <th scope="col">Reference Number</th>
+                                            <th scope="col">Transfert_on</th>
+                                            <th scope="col">Service_name</th>
+                                            <th scope="col">Entry_type</th>
+                                            <th scope="col">Transfert Value</th>
+                                            <th scope="col">Post Balance</th>
+                                            <th scope="col">Frais</th>
+                                            <th scope="col">IMEI</th>
+                                            <th scope="col">DateEnreg</th>
+                                            <th scope="col">Erreur</th>
+                                            <th scope="col">Transaction State</th>
+                                            <th scope="col">m_vers_client_sama</th>
+                                            <th scope="col">a_vers_client</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for bank in banks %}  
+                                            <tr>
+                                                <td>{{bank.id}}</td>
+                                                <td>{{bank.idExcel}}</td>
+                                                <td>{{bank.type}}</td>
+                                                <td>{{bank.idusersama}}</td>
+                                                <td>{{bank.phoneuser}}</td>
+                                                <td>{{bank.phoneuser}}</td>
+                                                <td>{{bank.mnoid}}</td>
+                                                <td>{{bank.banque}}</td>
+                                                <td>{{bank.idtransSama}}</td>
+                                                <td>{{bank.idtransBanque}}</td>
+                                                <td>{{bank.transfertAt|date('d-m-Y H:i:s A')}}</td>
+                                                <td>{{bank.serviceName}}</td>
+                                                <td>{{bank.entryType}}</td>
+                                                <td>{{bank.montant ? : 0}}</td>
+                                                <td>{{bank.postBalance ? : 0}}</td>
+                                                <td>{{bank.frais ? : 0}}</td>
+                                                <td>{{bank.imei}}</td>
+                                                <td>{{bank.saveAt|date('d-m-Y H:i A')}}</td>
+                                                <td>{{bank.erreur}}</td>
+                                                <td>{{bank.status ? : 0}}</td>
+                                                <td>{{bank.mclientsama ? : 0}}</td>
+                                                <td>{{bank.aversclient ? : 0}}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="card-body rgba-amber-light">
+                            <span class="mx-auto my-auto">
+                                <h5>Veuillez d'abord importer des données.</h5>
+                            </span>
+                        </div>
+                    {% endif %}
+                    
+                </div>
+            </div>
+            <!-- Gird column -->
+        </section>
+        <!-- Section: Basic examples -->
+    </div>
+    
+{% endblock %}
+{% block ScriptP %}
+    <script>
+        $(document).ready(function(){
+           var table =  $('#dt').DataTable({
+                dom: 'Bfrtip',
+                autoWidth: true,
+                lengthChange: false,
+                buttons: [
+                    {
+                        extend:'colvis',
+                        text:"Filtrer les colonnes"
+                    },
+                    {
+                        extend: 'csv',
+                        text:' CSV <i class="fa fa-download" aria-hidden="true"></i>',
+                        split: [ 'pdf', 'excel', 'print'],
+                        title: 'ConvertedToCSV',
+                        exportOptions: {
+                            columns: [':visible' ]
+                        }
+                        
+                    },
+                    
+                    
+                ],
+                language:{
+                    search: '_INPUT_',
+                    searchPlaceholder: 'Filtrer...',
+                    emptyTable: "Oups.. la base de données est vide.",
+                    info: "Montrant _START_ à _END_ sur _TOTAL_ entries",
+                    infoEmpty: "Vide",
+                    lengthMenu:"Afficher par _MENU_ entrées",
+                    paginate: {
+                        first: "<< ",
+                        last: ">>",
+                        next: "Suivante",
+                        previous: "Précédente"
+                    },
+                },
+                
+                
+            });
+             table.buttons().container().appendTo( '#example_wrapper .col-md-6:eq(0)' );
+
+            $('#rapportForm').on('submit', function(event){
+                event.preventDefault();
+                $.ajax({
+                    url:"{{ path('app_sheet_upload', {'process': true}) }}",
+                    method:"POST",
+                    data:new FormData(this),
+                    contentType:false,
+                    cache:false,
+                    processData:false,
+                    beforeSend:function(){
+                        $('#import').attr('disabled', 'disabled');
+                        $('#import').text('Patientez...');
+                    },
+                    success:function(data)
+                    {
+                        $('#message').html(data);
+                        $('#rapportForm').trigger("reset");
+                        $('#import').attr('disabled', false);
+                        $('#import').text('Importer');
+                        setTimeout(function(){
+                            location.reload();
+                        }, 3000)     
+                    },
+                    error:function(data) {console.log(data)}
+                })
+            });
+            $('div.dataTables_filter input').addClass('md-form');
+        });
+    </script>
+{% endblock %}

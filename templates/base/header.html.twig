@@ -1,0 +1,28 @@
+<nav class="navbar navbar-expand-lg special-color-dark">
+
+        <!-- Navbar brand -->
+        <a class=" navbar-brand w-25" href="{{ path('app_home') }}"><strong class="h3">S A M A </strong><span class="h5 red-text">Convert<span></a>
+      
+        <!-- Collapse button -->
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#basicExampleNav"
+          aria-controls="basicExampleNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon" style="color:green!important;"><i class="fas fa-list"></i></span>
+        </button>
+      
+        <!-- Collapsible content -->
+        <div class="collapse navbar-collapse" id="basicExampleNav">
+      
+          
+          <div class="my-0 ml-auto">
+                <a class="btn btn-rounded waves-effect btn-md text-white font-weight-bold"  role="button" href="#" data-toggle="modal" data-target="#modalImportForm"> Importer <i class="fas fa-upload ml-2" aria-hidden="true"></i></a>
+                {# <a class="btn btn-rounded waves-effect btn-md text-primary" href="">Connexion</a> #}
+                {# <a class="btn aqua-gradient btn-rounded waves-effect btn-md" href="">Inscription</a> #}
+          </div>
+         
+        </div>
+        <!-- Collapsible content -->
+      
+    </nav>
+
+   {{ include('csv/_form.html.twig') }}
+   
